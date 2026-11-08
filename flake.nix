@@ -5,7 +5,7 @@
   };
 
   outputs =
-    { nixpkgs, ... }@inputs:
+    { self, nixpkgs, ... }@inputs:
     let
       eachSystem =
         f:
@@ -21,15 +21,24 @@
     in
     {
       packages = eachSystem (
-        _system: pkgs: {
+        _system: pkgs:
+        let
+          forge = pkgs.callPackage ./nix/forge.nix {
+            racketDeps = pkgs.callPackage ./nix/racket-deps.nix { };
+          };
+        in
+        {
+          default = forge;
+          inherit forge;
         }
       );
 
       devShells = eachSystem (
-        _system: pkgs: {
-          default = pkgs.mkShell {
+        system: pkgs: {
+          examples = pkgs.mkShell {
             packages = [
               pkgs.vscode
+              self.packages.${system}.default
             ];
           };
         }
