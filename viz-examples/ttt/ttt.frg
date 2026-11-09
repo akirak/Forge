@@ -1,4 +1,4 @@
-#lang forge/bsl
+#lang forge/froglet
 
 /*
   Tic-tac-toe boards, moves, and games
